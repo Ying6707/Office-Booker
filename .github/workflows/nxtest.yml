@@ -23,16 +23,19 @@ jobs:
         node-version: [14.x]
     services:
       postgres:
-        image: postgres:12-alpine
-        restart: always
-        container-name: integration-tests
+        image: postgres
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
         ports:
           - '5432:5432'
-        environment:
-          POSTGRES_USER: prisma
-          POSTGRES_PASSWORD: prisma
-          POSTGRES_DB: tests
-          DATABASE_URL: postgressql://prisma:prisma@localhost:5432/tests
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/integration-test
 
     steps:
         #Checking out to the develop branch
@@ -78,10 +81,8 @@ jobs:
 
       - name: Unit test affected
         if: inputs.testtype == 'unit' && inputs.test == 'affected'
-        env:
-          DATABASE_URL: postgresql://localUser:localPassword@localhost:5432/test
         run: |
-          docker-compose up -d
+          yarn prisma db:push
           yarn nx affected:test --base=${{ env.NX_BASE }} --head=${{ env.NX_HEAD }}
 
       - name: E2E test affected
