@@ -79,12 +79,11 @@ jobs:
 
       - name: Unit test affected
         if: inputs.testtype == 'unit' && inputs.test == 'affected'
-        run: |
-          yarn prisma db push
-          yarn prisma migrate reset
-          yarn nx affected:test --base=${{ env.NX_BASE }} --head=${{ env.NX_HEAD }}
         env:
           DATABASE_URL: postgresql://localUser:localPassword@localhost:5432/test
+        run: |
+          yarn prisma db push --preview-feature
+          yarn nx affected:test --base=${{ env.NX_BASE }} --head=${{ env.NX_HEAD }}
 
       - name: E2E test affected
         if: inputs.testtype == 'e2e' && inputs.test == 'affected'
