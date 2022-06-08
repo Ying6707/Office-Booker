@@ -23,7 +23,7 @@ jobs:
         node-version: [14.x]
     services:
       postgres:
-        image: postgres:13
+        image: postgres:12-alpine
         restart: always
         container-name: integration-tests
         ports:
