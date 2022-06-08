@@ -23,11 +23,10 @@ jobs:
         node-version: [14.x]
     services:
       postgres:
-        image: postgres:12-alpine
+        image: postgres
         env:
-          POSTGRES_USER: localUser
-          POSTGRES_PASSWORD: localPassword
-          POSTGRES_DB: test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
         ports:
           - 5432:5432
         options: >-
