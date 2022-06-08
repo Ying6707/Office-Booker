@@ -23,10 +23,11 @@ jobs:
         node-version: [14.x]
     services:
       postgres:
-        image: postgres
+        image: postgres:12-alpine
         env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: localUser
+          POSTGRES_PASSWORD: localPassword
+          POSTGRES_DB: test
         ports:
           - 5432:5432
         options: >-
@@ -82,6 +83,8 @@ jobs:
           yarn prisma db push
           yarn prisma seed
           yarn nx affected:test --base=${{ env.NX_BASE }} --head=${{ env.NX_HEAD }}
+        env:
+          DATABASE_URL: postgresql://localUser:localPassword@localhost:5432/test
 
       - name: E2E test affected
         if: inputs.testtype == 'e2e' && inputs.test == 'affected'
