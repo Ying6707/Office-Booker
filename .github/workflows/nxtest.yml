@@ -25,8 +25,8 @@ jobs:
       postgres:
         image: postgres:12-alpine
         env:
-          POSTGRES_USER: 
-          POSTGRES_PASSWORD: 
+          POSTGRES_USER: localUser
+          POSTGRES_PASSWORD: localPassword
           POSTGRES_DB: test
         ports:
           - 5432:5432
@@ -80,7 +80,8 @@ jobs:
       - name: Unit test affected
         if: inputs.testtype == 'unit' && inputs.test == 'affected'
         run: |
-          yarn prisma db push POSTGRES_HOST_AUTH_METHOD=trust
+          yarn prisma db push
+          yarn prisma seed
           yarn nx affected:test --base=${{ env.NX_BASE }} --head=${{ env.NX_HEAD }}
 
       - name: E2E test affected
