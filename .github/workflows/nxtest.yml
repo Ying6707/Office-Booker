@@ -18,6 +18,23 @@ jobs:
   build:
     name: Generate cache
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [14.x]
+    services:
+      postgres:
+        image: postgres:12-alpine
+        env:
+          POSTGRES_USER: localUser
+          POSTGRES_PASSWORD: localPassword
+          POSTGRES_DB: test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
         #Checking out to the develop branch
       - name: Checkout develop
@@ -62,7 +79,9 @@ jobs:
 
       - name: Unit test affected
         if: inputs.testtype == 'unit' && inputs.test == 'affected'
-        run: yarn nx affected:test --base=${{ env.NX_BASE }} --head=${{ env.NX_HEAD }}
+        run: |
+          yarn prisma db push
+          yarn nx affected:test --base=${{ env.NX_BASE }} --head=${{ env.NX_HEAD }}
 
       - name: E2E test affected
         if: inputs.testtype == 'e2e' && inputs.test == 'affected'
