@@ -83,7 +83,6 @@ jobs:
         if: inputs.testtype == 'unit' && inputs.test == 'affected'
         run: |
           yarn prisma db push
-          yarn prisma studio
           yarn nx affected:test --base=${{ env.NX_BASE }} --head=${{ env.NX_HEAD }}
 
       - name: E2E test affected
