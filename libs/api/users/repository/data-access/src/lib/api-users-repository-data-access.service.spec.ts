@@ -1,4 +1,4 @@
-import { Test } from '@nestjs/testing';
+import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from '@office-booker/api/shared/services/prisma/data-access';
 import { ApiUsersRepositoryDataAccessService } from './api-users-repository-data-access.service';
 import exp = require('constants');
@@ -92,13 +92,51 @@ describe('ApiUsersRepositoryDataAccessService', () => {
         name: 'test',
         company: null,
         Bookings: null,
-        email: 'test'
+        email: 'test',
+        admin: false
       };
       prisma.employee.create = jest.fn().mockReturnValueOnce(user);
       expect(await service.createUser(user)).toEqual(user);
     });
   });
 
+});
+
+//integration tests
+describe('ApiUsersRepositoryDataAccessService (Integration tests)', () => {
+  let service: ApiUsersRepositoryDataAccessService;
+  let prisma: PrismaService;
+
+  beforeEach(async () => {
+    const module = await Test.createTestingModule({
+      providers: [ApiUsersRepositoryDataAccessService, PrismaService],
+    }).compile();
+    service = module.get<ApiUsersRepositoryDataAccessService>(ApiUsersRepositoryDataAccessService);
+    prisma = module.get<PrismaService>(PrismaService);
+  });
+
+  describe('getUsers', () => {
+    it('should return an array of users', async () => {
+      const result = await service.getUsers();
+      const expected =  [
+        {
+          id: 1,
+          name: 'Kryptos Kode',
+          email: 'kryptoskode301@gmail.com',
+          companyId: 1,
+          admin: true
+        },
+        {
+          id: 2,
+          name: 'Brett du Plessis',
+          email: 'duplessisbrett@icloud.com',
+          companyId: 1,
+          admin: false
+        }
+      ]
+      expect(result).toEqual(expected);
+    });
+  });
 });
 
 
